@@ -6,7 +6,7 @@
 extern crate env_logger;
 
 use std::sync::{Once, ONCE_INIT};
-use std::sync::{Arc};
+use std::sync::Arc;
 use mongo_driver::client::{ClientPool, Uri};
 
 static LOG_INIT_ONCE: Once = ONCE_INIT;
