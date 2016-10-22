@@ -1,32 +1,18 @@
-#[macro_use(doc, bson)]
-extern crate bson;
-extern crate env_logger;
-extern crate mongo_driver;
-extern crate mongo_oplog;
-
+use std::thread;
+use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::Arc;
-use std::sync::{Once, ONCE_INIT};
-use bson::Bson;
+
 use mongo_driver::client::{ClientPool, Uri};
 use mongo_driver::collection::TailOptions;
 use mongo_driver::CommandAndFindOptions;
 
-use mongo_oplog::op::Op;
+use bson::Bson;
 
-static START: Once = ONCE_INIT;
+use op;
 
-fn log_init() {
-    START.call_once(|| {
-        env_logger::init().unwrap();
-    });
-}
-
-#[ignore]
-#[test]
-fn test_tail() {
-    log_init();
-
-    let uri = Uri::new("mongodb://db:27017/").unwrap();
+fn bar(tx: Sender<op::Op>) {
+    //    let uri = Uri::new("mongodb://db:27017/").unwrap();
+    let uri = Uri::new("mongodb://192.168.1.147:27017/").unwrap();
     let pool = Arc::new(ClientPool::new(uri.clone(), None));
 
     let client = pool.pop();
@@ -45,18 +31,24 @@ fn test_tail() {
 
     let cur = coll.tail(query, Some(opts), Some(tail_opts));
 
-    let mut i = 0;
     for res in cur {
         let res = res.expect("iter res ok");
 
-        let op = Op::from_doc(&res).expect("is op");
+        let op = op::Op::from_doc(&res).expect("is op");
 
-        i = i + 1;
-
-        if i > 6000 {
-            break;
-        }
-
-        println!("The op is {:?}", op);
+        tx.send(op).unwrap();
     }
+}
+
+pub fn create_oplog_receiver() -> (Receiver<op::Op>, thread::JoinHandle)
+{
+    let (tx, rx) = channel::<op::Op>();
+
+    let handle = thread::Builder::new()
+        .name("oplog-read-thread".to_string())
+        .spawn(move || {
+            bar(tx);
+        })
+        .unwrap();
+    (rx, handle)
 }
