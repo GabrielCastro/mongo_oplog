@@ -5,16 +5,23 @@ use mongo_oplog::op_source;
 #[ignore]
 #[test]
 fn test_op_source() {
+    let (rx, join_handle) = op_source::create_oplog_receiver();
 
-    let rx = op_source::create_oplog_receiver();
-
-    let mut i = 0;
-    loop {
-        let op = rx.recv().unwrap();
-        i = i + 1;
-        if i % 50 == 0 {
-            println!("{:?}", op);
+    for _ in 1..10 {
+        let op = rx.recv();
+        if op.is_err() {
+            println!("{:?}", op.err().unwrap());
+            break;
         }
+        let op = op.expect("to receive op");
+
+        println!("{:?}", op);
     }
 
+    drop(rx);
+
+    match join_handle.join() {
+        Err(err) => println!("{:?}", err),
+        Ok(_) => ()
+    }
 }

@@ -10,7 +10,7 @@ use bson::Bson;
 
 use op;
 
-fn bar(tx: Sender<op::Op>) {
+fn tail_the_oplog(tx: Sender<op::Op>) {
     //    let uri = Uri::new("mongodb://db:27017/").unwrap();
     let uri = Uri::new("mongodb://192.168.1.147:27017/").unwrap();
     let pool = Arc::new(ClientPool::new(uri.clone(), None));
@@ -36,18 +36,21 @@ fn bar(tx: Sender<op::Op>) {
 
         let op = op::Op::from_doc(&res).expect("is op");
 
-        tx.send(op).unwrap();
+        if let Err(_) = tx.send(op) {
+            break;
+        }
     }
 }
 
-pub fn create_oplog_receiver() -> (Receiver<op::Op>, thread::JoinHandle)
+pub fn create_oplog_receiver() -> (Receiver<op::Op>, thread::JoinHandle<()>)
 {
     let (tx, rx) = channel::<op::Op>();
 
-    let handle = thread::Builder::new()
+    let handle: thread::JoinHandle<()> = thread::Builder::new()
         .name("oplog-read-thread".to_string())
         .spawn(move || {
-            bar(tx);
+            tail_the_oplog(tx);
+            ()
         })
         .unwrap();
     (rx, handle)
