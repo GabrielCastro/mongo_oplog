@@ -9,4 +9,8 @@ matrix:
   allow_failures:
     - rust: nightly
 
-script: ./scripts/travis_test.sh
+install:
+  - cargo install rustfmt
+
+script:
+  - ./scripts/travis_test.sh
