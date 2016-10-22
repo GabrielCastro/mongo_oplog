@@ -22,10 +22,7 @@ pub enum Op {
         o: bson::Document,
         o2: bson::Document,
     },
-    NoOp {
-        ts: i64,
-        h: i64
-    },
+    NoOp { ts: i64, h: i64 },
     Delete {
         ts: i64,
         h: i64,
@@ -41,7 +38,6 @@ pub enum Op {
 }
 
 impl Op {
-    
     fn get_common(doc: &Document) -> Result<(i64, i64, &str), OpLogError> {
         let ts = try!(doc.get_time_stamp("ts"));
         let h = try!(doc.get_i64("h"));
@@ -137,7 +133,7 @@ impl Op {
 
     ///
     /// Converts a bson::Document into an oplog entry
-    /// 
+    ///
     pub fn from_doc(doc: &Document) -> Result<Op, OpLogError> {
         let op_name = try!(doc.get_str("op"));
 

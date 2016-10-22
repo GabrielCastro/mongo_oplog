@@ -59,7 +59,8 @@ fn tail_the_oplog(client: Client, tx: Sender<op::Op>) -> Result<(), errors::OpLo
 ///
 /// Creates a receiver that will get sent oplog operations as they're tailed.
 ///
-/// The created thread will panic if there is any error in tailing or finish when the receiver is dropped.
+/// The created thread will panic if there is any error in tailing or finish
+/// when the receiver is dropped.
 ///
 pub fn create_oplog_receiver(pool: Arc<ClientPool>) -> (Receiver<op::Op>, thread::JoinHandle<()>) {
     let (tx, rx) = channel::<op::Op>();

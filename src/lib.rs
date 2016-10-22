@@ -1,4 +1,3 @@
-//!
 //! TODO: a top level description
 //!
 #[macro_use(doc, bson)]

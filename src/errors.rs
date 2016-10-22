@@ -1,4 +1,3 @@
-//!
 //! Contains errors from this create
 //!
 use std::error;
@@ -13,35 +12,31 @@ use mongo_driver;
 #[derive(Debug)]
 pub enum OpLogError {
     /// An error in the mongo driver: includes connection issues
-    MongoError {
-        cause: mongo_driver::MongoError
-    },
+    MongoError { cause: mongo_driver::MongoError },
     /// Found something the the oplog that cannot be parsed
-    MalformedOplogEntry {
-        cause: Box<fmt::Debug>
-    },
+    MalformedOplogEntry { cause: Box<fmt::Debug> },
     /// Found an oplog entry with an `op` field that is unknown
-    UnknownOpType {
-        op_name: String
-    },
+    UnknownOpType { op_name: String },
     /// any other generic error
     Unknown,
 }
 
 impl OpLogError {
     pub fn from_unknown_op(op_name: &str) -> OpLogError {
-        OpLogError::UnknownOpType {
-            op_name: op_name.into()
-        }
+        OpLogError::UnknownOpType { op_name: op_name.into() }
     }
 
 
     fn description_str(&self) -> String {
         match self {
-            &OpLogError::MalformedOplogEntry { ref cause } => format!("OpLogError::MalformedOplogEntry: {:?}", cause),
+            &OpLogError::MalformedOplogEntry { ref cause } => {
+                format!("OpLogError::MalformedOplogEntry: {:?}", cause)
+            }
             &OpLogError::MongoError { ref cause } => format!("OpLogError::MongoError: {:?}", cause),
-            &OpLogError::UnknownOpType { ref op_name } => format!("OpLogError::UnknownOpType: {:?} ", op_name),
-            &OpLogError::Unknown => format!("OpLogError::Unknown")
+            &OpLogError::UnknownOpType { ref op_name } => {
+                format!("OpLogError::UnknownOpType: {:?} ", op_name)
+            }
+            &OpLogError::Unknown => format!("OpLogError::Unknown"),
         }
     }
 }
