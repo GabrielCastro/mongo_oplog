@@ -11,7 +11,7 @@ use mongo_driver::client::{ClientPool, Uri};
 fn test_op_source() {
 
     //    let uri = Uri::new("mongodb://db:27017/").unwrap();
-    let uri = Uri::new("mongodb://192.168.1.147:27017/").unwrap();
+    let uri = Uri::new("mongodb://192.168.1.147:27017/?readPreference=secondaryPreferred&slaveOk=1").unwrap();
     let pool = Arc::new(ClientPool::new(uri.clone(), None));
 
     let (rx, join_handle) = op_source::create_oplog_receiver(pool);

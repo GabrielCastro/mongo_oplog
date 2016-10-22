@@ -9,10 +9,10 @@ use mongo_driver::CommandAndFindOptions;
 use bson::Bson;
 
 use op;
+use errors;
 
-fn tail_the_oplog(client: Client, tx: Sender<op::Op>) {
-
-    client.get_server_status(None).unwrap();
+fn tail_the_oplog(client: Client, tx: Sender<op::Op>) -> Result<(), errors::OpLogError> {
+    try!(client.get_server_status(None));
 
     let coll = client.get_collection("local", "oplog.rs");
 
@@ -28,25 +28,31 @@ fn tail_the_oplog(client: Client, tx: Sender<op::Op>) {
     let cur = coll.tail(query, Some(opts), Some(tail_opts));
 
     for res in cur {
-        let res = res.expect("iter res ok");
+        let res = try!(res);
 
-        let op = op::Op::from_doc(&res).expect("is op");
+        let op = try!(op::Op::from_doc(&res));
 
         if let Err(_) = tx.send(op) {
+            // no one is listening so we'll stop tailing
             break;
         }
     }
+
+    Ok(())
 }
 
 pub fn create_oplog_receiver(pool: Arc<ClientPool>) -> (Receiver<op::Op>, thread::JoinHandle<()>) {
-
     let (tx, rx) = channel::<op::Op>();
 
     let handle: thread::JoinHandle<()> = thread::Builder::new()
         .name("oplog-read-thread".to_string())
         .spawn(move || {
             let client = pool.pop();
-            tail_the_oplog(client, tx);
+            // panic here for now instead of trying to return a result
+            let result = tail_the_oplog(client, tx);
+            if result.is_err() {
+                panic!("tailing ended early: {:?}", result.err().unwrap());
+            }
             ()
         })
         .unwrap();
