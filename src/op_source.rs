@@ -14,11 +14,17 @@ use errors;
 fn tail_the_oplog(client: Client, tx: Sender<op::Op>) -> Result<(), errors::OpLogError> {
     try!(client.get_server_status(None));
 
-    let coll = client.get_collection("local", "oplog.rs");
+    let db_name = "local";
+    let coll_name = "oplog.rs";
+    let gt = Bson::TimeStamp(0);
+
+    info!("starting tail on {}.{} at {}", db_name, coll_name, gt);
+
+    let coll = client.get_collection(db_name, coll_name);
 
     let query = doc! {
         "ts" => {
-            "$gt" => (Bson::TimeStamp(0))
+            "$gt" => gt
         }
     };
 
@@ -33,6 +39,7 @@ fn tail_the_oplog(client: Client, tx: Sender<op::Op>) -> Result<(), errors::OpLo
         let op = try!(op::Op::from_doc(&res));
 
         if let Err(_) = tx.send(op) {
+            info!("disconnected from tail since receiver has dropped");
             // no one is listening so we'll stop tailing
             break;
         }

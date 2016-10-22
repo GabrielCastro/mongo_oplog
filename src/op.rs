@@ -137,7 +137,7 @@ impl Op {
             "n" => Op::from_noop(doc),
             "d" => Op::from_delete(doc),
             "c" => Op::from_command(doc),
-            _ => Err(OpLogError::UnknownOpType),
+            _ => Err(OpLogError::from_unknown_op(op_name)),
         }
     }
 }

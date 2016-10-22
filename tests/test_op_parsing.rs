@@ -3,22 +3,16 @@ extern crate log;
 #[macro_use(doc, bson)]
 extern crate bson;
 extern crate mongo_driver;
-extern crate env_logger;
 extern crate mongo_oplog;
 
 use bson::Bson;
 use bson::oid;
 
 use mongo_oplog::op::Op;
-use std::sync::{Once, ONCE_INIT};
 
-static START: Once = ONCE_INIT;
+mod utils;
 
-fn log_init() {
-    START.call_once(|| {
-        env_logger::init().unwrap();
-    });
-}
+use utils::log_init;
 
 #[test]
 fn check_op_insert() {
