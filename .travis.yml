@@ -10,7 +10,7 @@ matrix:
     - rust: nightly
 
 install:
-  - PATH="$HOME/.cargo/bin:$PATH" cargo install --verbose rustfmt
+  - ./scripts/travis_setup.sh
 
 script:
   - ./scripts/travis_test.sh
