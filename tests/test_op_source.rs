@@ -1,18 +1,14 @@
 extern crate mongo_oplog;
 extern crate mongo_driver;
+mod utils;
 
-use std::sync::Arc;
 use mongo_oplog::op_source;
-use mongo_driver::client::{ClientPool, Uri};
-
 
 #[ignore]
 #[test]
 fn test_op_source() {
 
-    //    let uri = Uri::new("mongodb://db:27017/").unwrap();
-    let uri = Uri::new("mongodb://192.168.1.147:27017/?readPreference=secondaryPreferred&slaveOk=1").unwrap();
-    let pool = Arc::new(ClientPool::new(uri.clone(), None));
+    let pool = utils::get_mongo();
 
     let (rx, join_handle) = op_source::create_oplog_receiver(pool);
 
@@ -33,4 +29,11 @@ fn test_op_source() {
         Err(err) => println!("{:?}", err),
         Ok(_) => ()
     }
+}
+
+#[test]
+fn force_test_compile() {
+    // this is here so that cargo test still compiles this module
+    // even though the above is ignored.
+    assert!(true, "this test module compiles");
 }
