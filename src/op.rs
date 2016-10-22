@@ -25,11 +25,18 @@ pub enum Op {
         ns: String,
         _id: oid::ObjectId,
     },
+    /// see: https://groups.google.com/forum/#!topic/mongodb-user/dTf5VEJJWvY
+    ApplyOps {
+        ts: i64,
+        h: i64,
+        ns: String,
+        apply_ops: Vec<Op>,
+    },
     Command {
         ts: i64,
         h: i64,
         ns: String,
-        apply_ops: Option<Vec<Op>>,
+        o: Option<Bson>,
     },
 }
 
@@ -92,33 +99,40 @@ impl Op {
     fn from_command(doc: &Document) -> Result<Op, OpLogError> {
         let (ts, h, ns) = try!(Op::get_common(doc));
 
-        let mut op = Op::Command {
+        if !doc.contains_key("o") {
+            return Ok(Op::Command {
+                ts: ts,
+                h: h,
+                ns: ns.into(),
+                o: None,
+            });
+        }
+
+        let o = doc.get_document("o").unwrap();
+
+        if !o.contains_key("applyOps") {
+            return Ok(Op::Command {
+                ts: ts,
+                h: h,
+                ns: ns.into(),
+                o: Some(Bson::Document(o.clone())),
+            });
+        }
+
+        let apply_ops = try!(o.get_array("applyOps"));
+
+        let ops_result: Result<Vec<Op>, _> = apply_ops.into_iter()
+            .map(|bson| Op::from_bson(bson))
+            .collect();
+
+        let ops_result = try!(ops_result);
+
+        Ok(Op::ApplyOps {
             ts: ts,
             h: h,
             ns: ns.into(),
-            apply_ops: None,
-        };
-
-        // see: https://groups.google.com/forum/#!topic/mongodb-user/dTf5VEJJWvY
-        if doc.contains_key("o") {
-            let o = try!(doc.get_document("o"));
-            if o.contains_key("applyOps") {
-                let apply_ops = try!(o.get_array("applyOps"));
-
-                let ops_result: Result<Vec<Op>, _> = apply_ops.into_iter()
-                    .map(|bson| Op::from_bson(bson))
-                    .collect();
-
-                let ops_result = Some(try!(ops_result));
-
-                if let Op::Command { ref mut apply_ops, .. } = op {
-                    *apply_ops = ops_result;
-                }
-
-            }
-        }
-
-        Ok(op)
+            apply_ops: ops_result,
+        })
     }
 
     fn from_bson(bson_doc: &Bson) -> Result<Op, OpLogError> {

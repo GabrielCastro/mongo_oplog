@@ -2,6 +2,7 @@
 name = "mongo_oplog"
 version = "0.0.1"
 authors = ["Gabriel Castro <dev@GabrielCastro.ca>"]
+exclude = [".travis.yml"]
 
 [dependencies]
 mongo_driver = "0.4.*"
