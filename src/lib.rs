@@ -1,3 +1,6 @@
+//!
+//! TODO: a top level description
+//!
 #[macro_use(doc, bson)]
 extern crate bson;
 extern crate mongo_driver;

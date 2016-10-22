@@ -1,20 +1,30 @@
+//!
+//! Contains errors from this create
+//!
 use std::error;
 use std::fmt;
 use std::convert;
 use bson;
 use mongo_driver;
 
+///
+/// All errors will be one of OpLogError
+///
 #[derive(Debug)]
 pub enum OpLogError {
+    /// An error in the mongo driver: includes connection issues
     MongoError {
         cause: mongo_driver::MongoError
     },
+    /// Found something the the oplog that cannot be parsed
     MalformedOplogEntry {
         cause: Box<fmt::Debug>
     },
+    /// Found an oplog entry with an `op` field that is unknown
     UnknownOpType {
         op_name: String
     },
+    /// any other generic error
     Unknown,
 }
 
