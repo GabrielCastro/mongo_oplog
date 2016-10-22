@@ -6,4 +6,6 @@ cd "./$(dirname "$0")/.."
 
 PATH="$HOME/.cargo/bin:$PATH"
 
-exec cargo install --verbose rustfmt
+if [[ ! -x "$HOME/.cargo/bin/rustfmt" ]] ; then
+    exec cargo install --verbose rustfmt;
+fi
