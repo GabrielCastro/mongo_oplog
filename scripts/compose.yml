@@ -2,16 +2,25 @@ version: '2'
 services:
     db:
         image: mongo:3.3
+        container_name: monogo_oplog_mongo_3_3
+        expose:
+            - 27017
+    db26:
+        image: mongo:2.6
+        container_name: monogo_oplog_mongo_2_6
         expose:
             - 27017
     tests:
         build: .
         command: cargo
+        container_name: monogo_oplog_main
         volumes:
             - ../.docker/target:/src/target
             - ../.docker/cargo:/root/.cargo
             - ../:/src
         depends_on:
             - db
+#            - db26
         links:
             - db:db
+#            - db26:db26
