@@ -1,4 +1,3 @@
-//!
 //! This modules contains code that is to be reused from many tests
 //! The test here is mostly to silence used code warnings, and to force all utils
 //! to be compiles and are NOT for testing this module
