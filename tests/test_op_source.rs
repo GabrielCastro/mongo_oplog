@@ -1,4 +1,5 @@
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 extern crate mongo_oplog;
 extern crate mongo_driver;
 
@@ -27,7 +28,7 @@ fn test_op_source() {
 
     match join_handle.join() {
         Err(err) => panic!(err),
-        Ok(_) => ()
+        Ok(_) => (),
     }
 }
 
