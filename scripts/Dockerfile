@@ -12,7 +12,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN cargo
-ENV RUST_LOG cargo=error,rustc_metadata=error,rustc=error,trace
+ENV RUST_LOG cargo=error,rustc_metadata=error,rustc=error,debug
 ENV RUST_TEST_NOCAPTURE 1
 ENV RUST_BACKTRACE 1
 ENV PATH /root/.cargo/bin:$PATH

@@ -1,7 +1,7 @@
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate log;
 extern crate mongo_oplog;
 extern crate mongo_driver;
+
 mod utils;
 
 use mongo_oplog::op_source;
@@ -15,25 +15,26 @@ fn test_op_source() {
 
     let (rx, join_handle) = op_source::create_oplog_receiver(pool);
 
-    for _ in 1..10 {
-        let op = rx.recv();
-        if op.is_err() {
-            println!("{:?}", op.err().unwrap());
-            break;
+    // so that we can drop rx and it's iterator
+    {
+        let rx_iter = rx.iter().take(10);
+        for op in rx_iter {
+            trace!("{:?}", op);
         }
-        let op = op.expect("to receive op");
-
-        println!("{:?}", op);
     }
 
     drop(rx);
 
     match join_handle.join() {
-        Err(err) => println!("{:?}", err),
+        Err(err) => panic!(err),
         Ok(_) => ()
     }
 }
 
+/**
+ *  this is here so that cargo test still compiles this module
+ *  even though the above is ignored.
+ */
 #[test]
 fn force_test_compile() {
     utils::log_init();
