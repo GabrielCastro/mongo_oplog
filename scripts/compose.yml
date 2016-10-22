@@ -1,0 +1,17 @@
+version: '2'
+services:
+    db:
+        image: mongo:3.3
+        expose:
+            - 27017
+    tests:
+        build: .
+        command: cargo
+        volumes:
+            - ../.docker/target:/src/target
+            - ../.docker/cargo:/root/.cargo
+            - ../:/src
+        depends_on:
+            - db
+        links:
+            - db:db

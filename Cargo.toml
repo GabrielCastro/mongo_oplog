@@ -1,0 +1,12 @@
+[package]
+name = "mongo_oplog"
+version = "0.0.1"
+authors = ["Gabriel Castro <dev@GabrielCastro.ca>"]
+
+[dependencies]
+mongo_driver = "*"
+bson = "*"
+log = "*"
+
+[dev-dependencies]
+env_logger = "*"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "./$(dirname "$0")"
+
+docker-compose -f ./scripts/compose.yml kill
+docker-compose -f ./scripts/compose.yml rm  --force
+docker-compose -f ./scripts/compose.yml build &>/dev/null
+
+exec docker-compose -f ./scripts/compose.yml run --rm tests cargo $@
