@@ -2,7 +2,7 @@ use std::thread;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::Arc;
 
-use mongo_driver::client::{ClientPool, Uri};
+use mongo_driver::client::{Client, ClientPool};
 use mongo_driver::collection::TailOptions;
 use mongo_driver::CommandAndFindOptions;
 
@@ -10,14 +10,9 @@ use bson::Bson;
 
 use op;
 
-fn tail_the_oplog(tx: Sender<op::Op>) {
-    //    let uri = Uri::new("mongodb://db:27017/").unwrap();
-    let uri = Uri::new("mongodb://192.168.1.147:27017/").unwrap();
-    let pool = Arc::new(ClientPool::new(uri.clone(), None));
+fn tail_the_oplog(client: Client, tx: Sender<op::Op>) {
 
-    let client = pool.pop();
     client.get_server_status(None).unwrap();
-
 
     let coll = client.get_collection("local", "oplog.rs");
 
@@ -26,6 +21,7 @@ fn tail_the_oplog(tx: Sender<op::Op>) {
             "$gt" => (Bson::TimeStamp(0))
         }
     };
+
     let opts = CommandAndFindOptions::default();
     let tail_opts = TailOptions::default();
 
@@ -42,14 +38,15 @@ fn tail_the_oplog(tx: Sender<op::Op>) {
     }
 }
 
-pub fn create_oplog_receiver() -> (Receiver<op::Op>, thread::JoinHandle<()>)
-{
+pub fn create_oplog_receiver(pool: Arc<ClientPool>) -> (Receiver<op::Op>, thread::JoinHandle<()>) {
+
     let (tx, rx) = channel::<op::Op>();
 
     let handle: thread::JoinHandle<()> = thread::Builder::new()
         .name("oplog-read-thread".to_string())
         .spawn(move || {
-            tail_the_oplog(tx);
+            let client = pool.pop();
+            tail_the_oplog(client, tx);
             ()
         })
         .unwrap();
