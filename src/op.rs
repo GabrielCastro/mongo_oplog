@@ -56,6 +56,17 @@ impl Op {
         }
     }
 
+    pub fn get_ns(&self) -> Option<&String> {
+        match self {
+            &Op::Insert { ref ns, .. } => Some(ns),
+            &Op::Update { ref ns, .. } => Some(ns),
+            &Op::NoOp { .. } => None,
+            &Op::Delete { ref ns, .. } => Some(ns),
+            &Op::ApplyOps { ref ns, .. } => Some(ns),
+            &Op::Command { ref ns, .. } => Some(ns),
+        }
+    }
+
     pub fn get_h(&self) -> &i64 {
         match self {
             &Op::Insert { ref h, .. } => h,

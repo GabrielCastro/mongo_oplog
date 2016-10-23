@@ -8,6 +8,7 @@ exclude = [".travis.yml"]
 mongo_driver = "0.4.*"
 bson = "0.3.*"
 log = "0.3.*"
+regex = "0.1"
 
 [dev-dependencies]
 env_logger = "0.3.*"

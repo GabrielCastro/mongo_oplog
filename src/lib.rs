@@ -5,6 +5,7 @@ extern crate bson;
 extern crate mongo_driver;
 #[macro_use]
 extern crate log;
+extern crate regex;
 
 mod errors;
 pub mod op;
