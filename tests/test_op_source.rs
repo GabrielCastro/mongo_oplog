@@ -5,7 +5,9 @@ extern crate mongo_driver;
 
 mod utils;
 
+use std::sync::mpsc;
 use mongo_oplog::op_source;
+use mongo_oplog::op;
 
 #[ignore]
 #[test]

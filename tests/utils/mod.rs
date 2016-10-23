@@ -3,6 +3,8 @@
 //! to be compiles and are NOT for testing this module
 //!
 extern crate env_logger;
+extern crate regex;
+
 
 use std::sync::{Once, ONCE_INIT};
 use std::sync::Arc;
@@ -33,6 +35,10 @@ pub fn get_mongo() -> Arc<ClientPool> {
     pool
 }
 
+pub fn new_regex(pattren: &str) -> regex::Regex {
+    regex::Regex::new(pattren).unwrap()
+}
+
 ///
 /// Forces everything in this mod to be compiled and removes unused code warnings
 ///
@@ -40,4 +46,5 @@ pub fn get_mongo() -> Arc<ClientPool> {
 fn test_self() {
     log_init();
     get_mongo();
+    new_regex(r".*");
 }

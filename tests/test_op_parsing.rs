@@ -180,7 +180,7 @@ fn check_op_command_apply_ops() {
     let op = Op::from_doc(&insert).expect("from_doc");
 
     match op {
-        Op::ApplyOps { ts, h, ns, mut apply_ops } => {
+        Op::ApplyOps { ts, h, ns, apply_ops } => {
             assert_eq!(0i64, ts);
             assert_eq!(66i64, h);
             assert_eq!("test.$cmd", ns);

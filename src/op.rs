@@ -45,6 +45,39 @@ pub enum Op {
 }
 
 impl Op {
+    pub fn get_ts(&self) -> &i64 {
+        match self {
+            &Op::Insert { ref ts, .. } => ts,
+            &Op::Update { ref ts, .. } => ts,
+            &Op::NoOp { ref ts, .. } => ts,
+            &Op::Delete { ref ts, .. } => ts,
+            &Op::ApplyOps { ref ts, .. } => ts,
+            &Op::Command { ref ts, .. } => ts,
+        }
+    }
+
+    pub fn get_ns(&self) -> Option<&String> {
+        match self {
+            &Op::Insert { ref ns, .. } => Some(ns),
+            &Op::Update { ref ns, .. } => Some(ns),
+            &Op::NoOp { .. } => None,
+            &Op::Delete { ref ns, .. } => Some(ns),
+            &Op::ApplyOps { ref ns, .. } => Some(ns),
+            &Op::Command { ref ns, .. } => Some(ns),
+        }
+    }
+
+    pub fn get_h(&self) -> &i64 {
+        match self {
+            &Op::Insert { ref h, .. } => h,
+            &Op::Update { ref h, .. } => h,
+            &Op::NoOp { ref h, .. } => h,
+            &Op::Delete { ref h, .. } => h,
+            &Op::ApplyOps { ref h, .. } => h,
+            &Op::Command { ref h, .. } => h,
+        }
+    }
+
     fn get_common(doc: &Document) -> Result<(i64, i64, &str), OpLogError> {
         let ts = try!(doc.get_time_stamp("ts"));
         let h = try!(doc.get_i64("h"));
