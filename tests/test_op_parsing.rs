@@ -148,11 +148,11 @@ fn check_op_command() {
     let op = Op::from_doc(&insert).expect("from_doc");
 
     match op {
-        Op::Command { ref ts, ref h, ref ns, ref apply_ops } => {
+        Op::Command { ref ts, ref h, ref ns, ref o } => {
             assert_eq!(&0i64, ts);
             assert_eq!(&66i64, h);
             assert_eq!("test.$cmd", ns);
-            assert!(apply_ops.is_none(), "apply_ops.is_none()");
+            assert!(o.is_none(), "o.is_none()");
         }
         _ => panic!("op did not match command"),
     };
@@ -180,17 +180,14 @@ fn check_op_command_apply_ops() {
     let op = Op::from_doc(&insert).expect("from_doc");
 
     match op {
-        Op::Command { ts, h, ns, mut apply_ops } => {
+        Op::ApplyOps { ts, h, ns, mut apply_ops } => {
             assert_eq!(0i64, ts);
             assert_eq!(66i64, h);
             assert_eq!("test.$cmd", ns);
-            assert!(apply_ops.is_some(), "apply_ops.is_some()");
 
-            let ops = apply_ops.take().unwrap();
+            assert_eq!(apply_ops.len(), 1, "ops_size");
 
-            assert_eq!(ops.len(), 1, "ops_size");
-
-            let first_op = &ops[0];
+            let first_op = &apply_ops[0];
 
             match first_op {
                 &Op::NoOp { .. } => (),
