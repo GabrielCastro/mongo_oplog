@@ -38,8 +38,8 @@ fn test_ns_filtering_removes_db() {
     let second = tf.transform(op);
 
     match second {
-        Op::NoOp {..} => (),
-        _ => panic!("was expecting second to be NoOp")
+        Op::NoOp { .. } => (),
+        _ => panic!("was expecting second to be NoOp"),
     }
 }
 
@@ -54,7 +54,7 @@ fn test_ns_filtering_keeps_db() {
     let second = tf.transform(op);
 
     match second {
-        Op::Insert {..} => (),
-        _ => panic!("was expecting second to be Insert")
+        Op::Insert { .. } => (),
+        _ => panic!("was expecting second to be Insert"),
     }
 }
