@@ -2,7 +2,11 @@
 name = "mongo_oplog"
 version = "0.0.1"
 authors = ["Gabriel Castro <dev@GabrielCastro.ca>"]
-exclude = [".travis.yml"]
+exclude = [
+    ".travis.yml",
+    "scrtips/",
+    "docker_cargo"
+]
 
 description = "Provides a Strongly typed interface to the mongo oplog"
 license = "MIT"
