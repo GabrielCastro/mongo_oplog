@@ -6,24 +6,25 @@ pub trait OpTransform {
 }
 
 pub struct NsFilterTransform {
-    allowed_pattern: regex::Regex
+    allowed_pattern: regex::Regex,
 }
 
 impl NsFilterTransform {
     pub fn new(patten: regex::Regex) -> NsFilterTransform {
-        NsFilterTransform {
-            allowed_pattern: patten
-        }
+        NsFilterTransform { allowed_pattern: patten }
     }
 }
 
 impl OpTransform for NsFilterTransform {
     fn transform(&self, op: op::Op) -> op::Op {
-        // TODO: there's got to be a better way
-        let mut is_match = false;
-        if let Some(ns) = op.get_ns() {
-            is_match = self.allowed_pattern.is_match(ns);
-        }
+        let is_match = {
+            if let Some(ns) = op.get_ns() {
+                self.allowed_pattern.is_match(ns)
+            } else {
+                false
+            }
+        };
+
         if is_match {
             return op;
         }
