@@ -8,4 +8,11 @@ docker-compose -f ./scripts/compose.yml kill
 docker-compose -f ./scripts/compose.yml rm  --force
 docker-compose -f ./scripts/compose.yml build &>/dev/null
 
+if [[ "$1" = "fmt" ]] ; then
+    shift
+    exec docker-compose -f ./scripts/compose.yml run --rm tests \
+        cargo fmt -- --write-mode diff $@
+    exit 0
+fi
+
 exec docker-compose -f ./scripts/compose.yml run --rm tests cargo $@
