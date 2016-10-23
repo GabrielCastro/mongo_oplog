@@ -4,3 +4,4 @@ Cargo.lock
 .docker
 .DS_Store
 *~
+*.rs.bk

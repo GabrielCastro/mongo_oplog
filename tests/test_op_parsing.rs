@@ -73,7 +73,8 @@ fn check_op_update() {
             assert_eq!(&doc! {
                 "foo" => "bar",
                 "fizz" => "buzz"
-            }, o);
+            },
+                       o);
             assert_eq!(&doc! {
                 "_id" => 77i32
             },

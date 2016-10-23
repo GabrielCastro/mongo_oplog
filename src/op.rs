@@ -2,7 +2,11 @@ use bson;
 use bson::{Bson, Document, oid};
 use errors::OpLogError;
 
-
+///
+/// Represents an entry from the oplog
+///
+/// see: https://docs.mongodb.com/v3.2/core/replica-set-oplog/
+///
 #[derive(Debug)]
 pub enum Op {
     Insert {
@@ -142,6 +146,9 @@ impl Op {
         }
     }
 
+    ///
+    /// Converts a bson::Document into an oplog entry
+    ///
     pub fn from_doc(doc: &Document) -> Result<Op, OpLogError> {
         let op_name = try!(doc.get_str("op"));
 
