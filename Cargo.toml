@@ -6,8 +6,8 @@ exclude = [".travis.yml"]
 
 description = "Provides a Strongly typed interface to the mongo oplog"
 license = "MIT"
-license-file = "MIT"
-documentation = "LICENSE.txt"
+license-file = "LICENSE.txt"
+documentation = "https://github.com/GabrielCastro/mongo_oplog/"
 homepage = "https://github.com/GabrielCastro/mongo_oplog/"
 repository = "https://github.com/GabrielCastro/mongo_oplog/"
 
