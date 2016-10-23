@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = ["Gabriel Castro <dev@GabrielCastro.ca>"]
 exclude = [
     ".travis.yml",
-    "scrtips/",
+    "scripts/",
     "docker_cargo"
 ]
 
