@@ -20,7 +20,7 @@ use errors;
 /// tailing the oplog until there is some error
 ///
 fn tail_the_oplog(client: Client, tx: Sender<op::Op>) -> Result<(), errors::OpLogError> {
-    try!(client.get_server_status(None));
+    client.get_server_status(None)?;
 
     let db_name = "local";
     let coll_name = "oplog.rs";
@@ -42,9 +42,9 @@ fn tail_the_oplog(client: Client, tx: Sender<op::Op>) -> Result<(), errors::OpLo
     let cur = coll.tail(query, Some(opts), Some(tail_opts));
 
     for res in cur {
-        let res = try!(res);
+        let res = res?;
 
-        let op = try!(op::Op::from_doc(&res));
+        let op = op::Op::from_doc(&res)?;
 
         if let Err(_) = tx.send(op) {
             info!("disconnected from tail since receiver has dropped");

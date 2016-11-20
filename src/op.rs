@@ -79,17 +79,17 @@ impl Op {
     }
 
     fn get_common(doc: &Document) -> Result<(i64, i64, &str), OpLogError> {
-        let ts = try!(doc.get_time_stamp("ts"));
-        let h = try!(doc.get_i64("h"));
-        let ns = try!(doc.get_str("ns"));
+        let ts = doc.get_time_stamp("ts")?;
+        let h = doc.get_i64("h")?;
+        let ns = doc.get_str("ns")?;
         Ok((ts, h, ns))
     }
 
     fn from_update(doc: &Document) -> Result<Op, OpLogError> {
-        let (ts, h, ns) = try!(Op::get_common(doc));
+        let (ts, h, ns) = Op::get_common(doc)?;
 
-        let o = try!(doc.get_document("o"));
-        let o2 = try!(doc.get_document("o2"));
+        let o = doc.get_document("o")?;
+        let o2 = doc.get_document("o2")?;
 
         Ok(Op::Update {
             ts: ts,
@@ -101,9 +101,9 @@ impl Op {
     }
 
     fn from_insert(doc: &Document) -> Result<Op, OpLogError> {
-        let (ts, h, ns) = try!(Op::get_common(doc));
+        let (ts, h, ns) = Op::get_common(doc)?;
 
-        let o = try!(doc.get_document("o"));
+        let o = doc.get_document("o")?;
 
         Ok(Op::Insert {
             ts: ts,
@@ -114,16 +114,16 @@ impl Op {
     }
 
     fn from_noop(doc: &Document) -> Result<Op, OpLogError> {
-        let ts = try!(doc.get_time_stamp("ts"));
-        let h = try!(doc.get_i64("h"));
+        let ts = doc.get_time_stamp("ts")?;
+        let h = doc.get_i64("h")?;
         Ok(Op::NoOp { ts: ts, h: h })
     }
 
     fn from_delete(doc: &Document) -> Result<Op, OpLogError> {
-        let (ts, h, ns) = try!(Op::get_common(doc));
+        let (ts, h, ns) = Op::get_common(doc)?;
 
-        let o = try!(doc.get_document("o"));
-        let _id = try!(o.get_object_id("_id"));
+        let o = doc.get_document("o")?;
+        let _id = o.get_object_id("_id")?;
 
         Ok(Op::Delete {
             ts: ts,
@@ -134,7 +134,7 @@ impl Op {
     }
 
     fn from_command(doc: &Document) -> Result<Op, OpLogError> {
-        let (ts, h, ns) = try!(Op::get_common(doc));
+        let (ts, h, ns) = Op::get_common(doc)?;
 
         if !doc.contains_key("o") {
             return Ok(Op::Command {
@@ -156,13 +156,13 @@ impl Op {
             });
         }
 
-        let apply_ops = try!(o.get_array("applyOps"));
+        let apply_ops = o.get_array("applyOps")?;
 
         let ops_result: Result<Vec<Op>, _> = apply_ops.into_iter()
             .map(|bson| Op::from_bson(bson))
             .collect();
 
-        let ops_result = try!(ops_result);
+        let ops_result = ops_result?;
 
         Ok(Op::ApplyOps {
             ts: ts,
@@ -183,7 +183,7 @@ impl Op {
     /// Converts a bson::Document into an oplog entry
     ///
     pub fn from_doc(doc: &Document) -> Result<Op, OpLogError> {
-        let op_name = try!(doc.get_str("op"));
+        let op_name = doc.get_str("op")?;
 
         match op_name {
             "u" => Op::from_update(doc),
