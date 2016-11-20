@@ -175,7 +175,7 @@ impl Op {
     fn from_bson(bson_doc: &Bson) -> Result<Op, OpLogError> {
         match bson_doc {
             &Bson::Document(ref doc) => Op::from_doc(doc),
-            _ => Err(OpLogError::MalformedOplogEntry { cause: Box::new("bson is not document") }),
+            _ => Err(OpLogError::new_malformed_oplog_entry("bson is not document")),
         }
     }
 
