@@ -9,14 +9,12 @@ use backtrace::Backtrace;
 
 #[derive(Debug)]
 pub struct BacktraceCapture {
-    traces: Vec<Backtrace>
+    traces: Vec<Backtrace>,
 }
 
 impl BacktraceCapture {
     fn new() -> BacktraceCapture {
-        let mut new_instance = BacktraceCapture {
-            traces: Vec::with_capacity(1)
-        };
+        let mut new_instance = BacktraceCapture { traces: Vec::with_capacity(1) };
         new_instance.add_trace();
         new_instance
     }
@@ -35,35 +33,34 @@ pub enum OpLogError {
     /// An error in the mongo driver: includes connection issues
     MongoError {
         stack: BacktraceCapture,
-        cause: mongo_driver::MongoError
+        cause: mongo_driver::MongoError,
     },
     /// Found something the the oplog that cannot be parsed
     MalformedOplogEntry {
         stack: BacktraceCapture,
-        cause: Box<fmt::Debug>
+        cause: Box<fmt::Debug>,
     },
     /// Found an oplog entry with an `op` field that is unknown
     UnknownOpType {
         stack: BacktraceCapture,
-        op_name: String
+        op_name: String,
     },
     /// any other generic error
     Unknown,
 }
 
 impl OpLogError {
-
     pub fn new_malformed_oplog_entry<T: fmt::Debug + 'static>(cause: T) -> OpLogError {
         OpLogError::MalformedOplogEntry {
             stack: BacktraceCapture::new(),
-            cause: Box::new(cause)
+            cause: Box::new(cause),
         }
     }
 
     pub fn from_unknown_op(op_name: &str) -> OpLogError {
         OpLogError::UnknownOpType {
             stack: BacktraceCapture::new(),
-            op_name: op_name.into()
+            op_name: op_name.into(),
         }
     }
 
@@ -72,7 +69,9 @@ impl OpLogError {
             &OpLogError::MalformedOplogEntry { ref cause, .. } => {
                 format!("OpLogError::MalformedOplogEntry: {:?}", cause)
             }
-            &OpLogError::MongoError { ref cause, .. } => format!("OpLogError::MongoError: {:?}", cause),
+            &OpLogError::MongoError { ref cause, .. } => {
+                format!("OpLogError::MongoError: {:?}", cause)
+            }
             &OpLogError::UnknownOpType { ref op_name, .. } => {
                 format!("OpLogError::UnknownOpType: {:?} ", op_name)
             }
@@ -99,7 +98,7 @@ impl convert::From<bson::ValueAccessError> for OpLogError {
         info!("found malformed entry from: {:?}", e);
         OpLogError::MalformedOplogEntry {
             stack: BacktraceCapture::new(),
-            cause: Box::new(e)
+            cause: Box::new(e),
         }
     }
 }
@@ -109,7 +108,7 @@ impl convert::From<mongo_driver::MongoError> for OpLogError {
         warn!("Got a mongo error! \n{:?}", e);
         OpLogError::MongoError {
             stack: BacktraceCapture::new(),
-            cause: e
+            cause: e,
         }
     }
 }
