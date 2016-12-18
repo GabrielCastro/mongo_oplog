@@ -1,8 +1,5 @@
 //! TODO: a top level description
 //!
-#![cfg_attr(feature = "clippy", allow(unstable_features))]
-#![cfg_attr(feature = "clippy", feature(plugin))]
-#![cfg_attr(feature = "clippy", plugin(clippy))]
 
 #[macro_use(doc, bson)]
 extern crate bson;

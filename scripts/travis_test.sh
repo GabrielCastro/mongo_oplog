@@ -9,7 +9,8 @@ PATH="$HOME/.cargo/bin:$PATH"
 build_flags=''
 
 if [[ "$TRAVIS_RUST_VERSION" = 'nightly' ]] ; then
-    build_flags="--features 'clippy'"
+    cargo run install clippy
+    rustup run nightly cargo clippy
 fi
 
 cargo build $build_flags
