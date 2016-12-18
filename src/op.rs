@@ -46,35 +46,35 @@ pub enum Op {
 
 impl Op {
     pub fn get_ts(&self) -> &i64 {
-        match self {
-            &Op::Insert { ref ts, .. } => ts,
-            &Op::Update { ref ts, .. } => ts,
-            &Op::NoOp { ref ts, .. } => ts,
-            &Op::Delete { ref ts, .. } => ts,
-            &Op::ApplyOps { ref ts, .. } => ts,
-            &Op::Command { ref ts, .. } => ts,
+        match *self {
+            Op::Insert { ref ts, .. } |
+            Op::Update { ref ts, .. } |
+            Op::NoOp { ref ts, .. } |
+            Op::Delete { ref ts, .. } |
+            Op::ApplyOps { ref ts, .. } |
+            Op::Command { ref ts, .. } => ts,
         }
     }
 
     pub fn get_ns(&self) -> Option<&String> {
-        match self {
-            &Op::Insert { ref ns, .. } => Some(ns),
-            &Op::Update { ref ns, .. } => Some(ns),
-            &Op::NoOp { .. } => None,
-            &Op::Delete { ref ns, .. } => Some(ns),
-            &Op::ApplyOps { ref ns, .. } => Some(ns),
-            &Op::Command { ref ns, .. } => Some(ns),
+        match *self {
+            Op::Insert { ref ns, .. } |
+            Op::Update { ref ns, .. } |
+            Op::Delete { ref ns, .. } |
+            Op::ApplyOps { ref ns, .. } |
+            Op::Command { ref ns, .. } => Some(ns),
+            Op::NoOp { .. } => None,
         }
     }
 
     pub fn get_h(&self) -> &i64 {
-        match self {
-            &Op::Insert { ref h, .. } => h,
-            &Op::Update { ref h, .. } => h,
-            &Op::NoOp { ref h, .. } => h,
-            &Op::Delete { ref h, .. } => h,
-            &Op::ApplyOps { ref h, .. } => h,
-            &Op::Command { ref h, .. } => h,
+        match *self {
+            Op::Insert { ref h, .. } |
+            Op::Update { ref h, .. } |
+            Op::NoOp { ref h, .. } |
+            Op::Delete { ref h, .. } |
+            Op::ApplyOps { ref h, .. } |
+            Op::Command { ref h, .. } => h,
         }
     }
 

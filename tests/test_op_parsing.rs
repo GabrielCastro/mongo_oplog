@@ -189,8 +189,8 @@ fn check_op_command_apply_ops() {
 
             let first_op = &apply_ops[0];
 
-            match first_op {
-                &Op::NoOp { .. } => (),
+            match *first_op {
+                Op::NoOp { .. } => (),
                 _ => panic!("expected NoOp"),
             }
         }

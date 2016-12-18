@@ -5,9 +5,7 @@ extern crate mongo_driver;
 
 mod utils;
 
-use std::sync::mpsc;
 use mongo_oplog::op_source;
-use mongo_oplog::op;
 
 #[ignore]
 #[test]
@@ -28,9 +26,8 @@ fn test_op_source() {
 
     drop(rx);
 
-    match join_handle.join() {
-        Err(err) => panic!(err),
-        Ok(_) => (),
+    if let Err(err) = join_handle.join() {
+        panic!(err);
     }
 }
 

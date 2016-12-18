@@ -26,7 +26,7 @@ impl BacktraceCapture {
 }
 
 ///
-/// All errors will be one of OpLogError
+/// All errors will be one of `OpLogError`
 ///
 #[derive(Debug)]
 pub enum OpLogError {
